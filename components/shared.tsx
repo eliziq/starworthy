@@ -11,7 +11,17 @@ export const Container = styled.View`
   padding: 40px 7.5px 0px 7.5px;
 `;
 
+export const StyledLoader = styled.ActivityIndicator`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0.8;
+  z-index: 3;
+`;
+
 export const Card = styled.View`
+  position: relative;
   align-items: center;
   justify-content: center;
   background-color: white;

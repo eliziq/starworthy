@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState} from "react";
 import { SafeAreaView, ScrollView, View } from "react-native";
 import { TPersonage } from "../types";
 import { RouteProp } from "@react-navigation/native";
@@ -101,7 +101,7 @@ const Details: FC<DetailsProp> = ({ route }) => {
     displayStringProps("films");
     displayStringProps("vehicles");
     displayStringProps("starships");
-    
+
   }, [films, vehicles, starships]);
 
   const renderItem = (value: string[] | string) => {

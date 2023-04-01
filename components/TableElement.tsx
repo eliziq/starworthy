@@ -1,5 +1,5 @@
-import { FC, useState, useEffect } from "react";
-import { Text, View, Pressable } from "react-native";
+import { FC, useState, useEffect, useCallback, memo } from "react";
+import { Text, View } from "react-native";
 import styled from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack/lib/typescript/src/types";
@@ -7,9 +7,7 @@ import { TPersonage } from "../types";
 import { RootState } from "../store/store";
 import { addFavourite, removeFavourite } from "../store/favouriteSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import {
-  fetchAsyncEntity,
-} from "../store/personagesSlice";
+import { fetchAsyncEntity } from "../store/personagesSlice";
 import { colors } from "./colors";
 import IconButton from "./IconButton";
 import { RootStackParamList } from "../App";
@@ -20,6 +18,14 @@ const ElementContainer = styled.View`
   border-bottom-style: solid;
   border-bottom-color: ${colors.lightGrey};
   border-bottom-width: 1px;
+`;
+
+const StyledPressable = styled.Pressable`
+  flex-direction: row;
+  margin-top: -10;
+  padding-top: 7.5;
+  margin-bottom: -10;
+  padding-bottom: 5;
 `;
 
 type ElementProps = {
@@ -71,14 +77,17 @@ const TableElement: FC<ElementProps> = ({
 
   useEffect(() => {
     setPlanetName(planetFromState || "Homeworld");
-    setSpecies(speciesFromState || (name !== "Name" ? "Human" : "Species"));
   }, [planetFromState]);
+
+  useEffect(() => {
+    setSpecies(speciesFromState || (name !== "Name" ? "Human" : "Species"));
+  }, [speciesFromState]);
 
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [species, setSpecies] = useState("");
   const [planetName, setPlanetName] = useState("");
 
-  const likeHandler = () => {
+  const likeHandler = useCallback(() => {
     const likedPersonage = personages.find(
       (personage) => personage.name === name
     );
@@ -88,14 +97,15 @@ const TableElement: FC<ElementProps> = ({
       likedPersonage && dispatch(removeFavourite(likedPersonage));
     }
     setIsLiked((isLiked) => !isLiked);
-  };
+    console.log("Use Calback (Like handler)");
+  }, [personages, isLiked]);
 
   const uiMap: Array<[string, number]> = [
     [name, 24],
     [birth_year, 18],
     [gender, 18],
     [planetName, 18],
-    [species, 22],
+    [species, 25],
   ];
 
   const openDetailsHandler = () => {
@@ -118,14 +128,10 @@ const TableElement: FC<ElementProps> = ({
         name={isLiked || textStyles ? "heart" : "heart-outline"}
         size={16}
         color={textStyles ? "#000" : colors.red}
-        addStyles={{ width: "10%" }}
+        addStyles={{ width: "7%", padding: 15, margin: -15, marginRight: 5 }}
         pressHandler={likeHandler}
       />
-      <Pressable
-        style={{ flexDirection: "row" }}
-        onPress={openDetailsHandler}
-        disabled={!!textStyles}
-      >
+      <StyledPressable onPress={openDetailsHandler} disabled={!!textStyles}>
         {uiMap.map(([name, width], i) => (
           <View key={i} style={{ width: `${width}%` }}>
             <Text style={textStyles ? textStyles : { paddingLeft: 10 }}>
@@ -133,9 +139,9 @@ const TableElement: FC<ElementProps> = ({
             </Text>
           </View>
         ))}
-      </Pressable>
+      </StyledPressable>
     </ElementContainer>
   );
 };
 
-export default TableElement;
+export default memo(TableElement);

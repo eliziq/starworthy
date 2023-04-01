@@ -1,3 +1,4 @@
+import { storeData } from "../utils";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   TPage,
@@ -8,6 +9,8 @@ import {
   TVehicles,
   TStarships,
 } from "../types";
+
+export const persStorageKey = "personages";
 
 export type EntityThunkPayload = {
   type: "planets" | "vehicles" | "films" | "species" | "starships";
@@ -40,6 +43,7 @@ export const fetchAsyncPersonages = createAsyncThunk(
 );
 
 export type TPersonageState = {
+  isLoading: boolean;
   personages: TPersonage[];
   planetsMap: { [link: string]: string };
   speciesMap: { [link: string]: string };
@@ -54,6 +58,7 @@ export type TPersonageState = {
 };
 
 const initialState: TPersonageState = {
+  isLoading: false,
   personages: [],
   planetsMap: {},
   speciesMap: {},
@@ -78,14 +83,22 @@ const personagesSlice = createSlice({
 
       state.searched = { searchQuery: action.payload, results };
     },
+    initPersonageState: (state, action: PayloadAction<TPersonageState>) => {
+      state = action.payload;
+    },
   },
   extraReducers(builder) {
+    builder.addCase(fetchAsyncPersonages.pending, (state) => {
+      state.isLoading = true;
+    });
     builder.addCase(
       fetchAsyncPersonages.fulfilled,
       (state, action: PayloadAction<TPage>) => {
         const { results, count, previous, next } = action.payload;
         state.personages = results;
         state.page = { count, previous, next };
+        state.isLoading = false;
+        storeData(state, persStorageKey);
       }
     );
     builder.addCase(
@@ -99,11 +112,11 @@ const personagesSlice = createSlice({
             data as TPlanet | TSpecies | TVehicles | TStarships
           ).name;
         }
-        type === "species" ? console.log(data) : "";
+        storeData(state, persStorageKey);
       }
     );
   },
 });
 
-export const { setSearched } = personagesSlice.actions;
+export const { setSearched, initPersonageState } = personagesSlice.actions;
 export default personagesSlice.reducer;

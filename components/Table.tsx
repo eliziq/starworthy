@@ -1,5 +1,9 @@
 import { FC, useEffect, useState } from "react";
-import { FlatList, ListRenderItem, Text } from "react-native";
+import {
+  FlatList,
+  ListRenderItem,
+  Text,
+} from "react-native";
 import styled from "styled-components/native";
 import { TPersonage } from "../types";
 import { RootState } from "../store/store";
