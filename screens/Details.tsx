@@ -37,6 +37,7 @@ const Details: FC<DetailsProp> = ({ route }) => {
 
   const { displayedPersonage } = { ...route.params };
 
+  //getting fields that we already have in state
   const films = useAppSelector((state: RootState) => state.personages.filmsMap);
   const vehicles = useAppSelector(
     (state: RootState) => state.personages.vehiclesMap
@@ -45,17 +46,22 @@ const Details: FC<DetailsProp> = ({ route }) => {
     (state: RootState) => state.personages.starshipsMap
   );
 
+  //there will be kept fields for current personage to display
   const [displayedFilms, setDisplayedFilms] = useState<string[]>([]);
   const [displayedVehicles, setDisplayedVehicles] = useState<string[]>([]);
   const [displayedStarships, setDisplayedStarships] = useState<string[]>([]);
 
   useEffect(() => {
 
+    //this function gets entities from the store (or fetches, if there is none) and sets them to displayed
     const displayStringProps = (type: EntityThunkPayload["type"]) => {
+      //for planets we have different field/type names, but we do need them here anyway
       if (type !== "planets") {
         (displayedPersonage[type] as string[]).forEach((link) => {
+          //general variables for starships/films/vehicles
           let entityFromStore,
             displayedEntity: string[] = [];
+            //getting entities from store and assigning them to the temporary variable
           switch (type) {
             case "starships": {
               entityFromStore = starships[link];
@@ -73,6 +79,7 @@ const Details: FC<DetailsProp> = ({ route }) => {
               break;
             }
           }
+          //fetching entities that we dont have in store
           if (!entityFromStore) {
             dispatch(fetchAsyncEntity({ type: type, link }));
           } else if (!displayedEntity.includes(entityFromStore)) {
@@ -92,7 +99,6 @@ const Details: FC<DetailsProp> = ({ route }) => {
                 break;
               }
             }
-            
           }
         });
       }
@@ -104,6 +110,7 @@ const Details: FC<DetailsProp> = ({ route }) => {
 
   }, [films, vehicles, starships]);
 
+  // conditional render of items depending on if its a string or an array
   const renderItem = (value: string[] | string) => {
     if (Array.isArray(value)) {
       return (
@@ -119,12 +126,15 @@ const Details: FC<DetailsProp> = ({ route }) => {
   };
 
   const renderInfo = Object.entries({
+    //reassigning object with links to object with names
     ...Object.assign({}, displayedPersonage),
     films: displayedFilms,
     vehicles: displayedVehicles,
     starships: displayedStarships,
   })
+    //cutting unnecessary fields
     .slice(0, 13)
+    //formatting text to make it readable
     .map(([key, value], i) => (
       <DetailElement key={i}>
         <PropText>{key.split("_").join(" ")}:</PropText>

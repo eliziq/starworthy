@@ -18,6 +18,7 @@ export type EntityThunkPayload = {
   data: TPlanet | TSpecies | TFilms | TVehicles | TStarships;
 };
 
+//a fetch function for similar fields to get
 export const fetchAsyncEntity = createAsyncThunk(
   `personages/fetchAsyncEntity`,
   async ({
@@ -108,6 +109,7 @@ const personagesSlice = createSlice({
         if (type === "films") {
           state.filmsMap[link] = (data as TFilms).title;
         } else {
+          //adding data to fields with corresponding names
           state[`${type}Map`][link] = (
             data as TPlanet | TSpecies | TVehicles | TStarships
           ).name;

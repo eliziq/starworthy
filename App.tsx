@@ -1,5 +1,4 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, SafeAreaView } from "react-native";
+import { StyleSheet} from "react-native";
 import Main from "./screens/Main";
 import Details from "./screens/Details";
 import { Provider } from "react-redux";
@@ -24,8 +23,7 @@ export default function App() {
           }}
         >
           <Stack.Screen name="Main" component={Main} />
-          <Stack.Screen name="Details" component={Details} />
-          {/* <Main /> */}
+          <Stack.Screen name="Details" component={Details as any} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
